@@ -1,0 +1,26 @@
+# Application information
+info:
+  app:
+    name: Product App
+    description: Product app for inhouse training
+    version: 0.0.1
+
+# Actuator endpoints
+management:
+  endpoint:
+    web:
+      exposure:
+        include: health, info, metrics
+
+# H2 console path
+h2:
+  console:
+    enabled: true
+    path: /h2
+
+# Database Configuration
+r2dbc:
+  url: r2dbc:h2:mem:///products
+  username: sa
+  password:
+  initialization-mode: always
