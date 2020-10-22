@@ -1,4 +1,4 @@
-package io.seanapse.app.products.domain.entity;
+package io.seanapse.app.products.api.dto;
 
 public class ResourceIdentity {
     private Long id;

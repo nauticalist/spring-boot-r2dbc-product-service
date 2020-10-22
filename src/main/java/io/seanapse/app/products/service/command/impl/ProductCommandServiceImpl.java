@@ -56,7 +56,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
         productRepository.delete(product).subscribe();
     }
 
-    private final void publishProductEvent(String eventType, Product product) {
+    private void publishProductEvent(String eventType, Product product) {
         this.publisher.publishEvent(new ProductEvent(eventType, product));
     }
 }
