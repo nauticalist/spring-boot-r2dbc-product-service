@@ -5,6 +5,7 @@ import io.seanapse.app.products.api.dto.ProductResponseDTO;
 import io.seanapse.app.products.api.dto.ResourceIdentity;
 import io.seanapse.app.products.api.mapper.ProductMapper;
 import io.seanapse.app.products.domain.entity.Product;
+import io.seanapse.app.products.infrastructure.exception.exception.FileStorageException;
 import io.seanapse.app.products.infrastructure.exception.exception.ResourceNotFoundException;
 import io.seanapse.app.products.service.command.FileStorageService;
 import io.seanapse.app.products.service.command.ProductCommandService;
@@ -14,12 +15,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.util.function.Function;
 
+@RestController
 @RequestMapping(value = "/api/products")
 public class ProductController {
     private static final Logger LOG = LoggerFactory.getLogger(ProductController.class);
@@ -58,7 +62,7 @@ public class ProductController {
 
     @GetMapping(value = "/{sku}")
     @ResponseStatus(value = HttpStatus.OK)
-    public Mono<ResponseEntity<ProductResponseDTO>> getProduct(String sku) throws ResourceNotFoundException {
+    public Mono<ResponseEntity<ProductResponseDTO>> getProduct(@PathVariable String sku) throws ResourceNotFoundException {
         return productQueryService.getProduct(sku)
                 .map(productMapper::mapProductToProductResponseDTO)
                 .map(ResponseEntity::ok)
@@ -67,4 +71,43 @@ public class ProductController {
                 .log();
     }
 
+    @PutMapping(value = "/{sku}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public  Mono<ResponseEntity<ProductResponseDTO>> updateProduct(@PathVariable String sku, @Valid @RequestBody ProductRequestDTO productRequestDTO) throws ResourceNotFoundException{
+        try {
+            return productQueryService.getProduct(sku)
+                    .flatMap(product -> productCommandService.updateProduct(productMapper.mapProductRequestDTOtoProduct(productRequestDTO)))
+                    .map(updatedProduct -> ResponseEntity.ok().body(productMapper.mapProductToProductResponseDTO(updatedProduct)))
+                    .defaultIfEmpty(ResponseEntity.notFound().build());
+        } catch (RuntimeException e) {
+            LOG.warn("Update product command failed to execute {}", e.toString());
+            throw e;
+        }
+    }
+
+    @DeleteMapping(value = "/{sku}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public Mono<ResponseEntity<Void>> deleteProduct(@PathVariable String sku) throws ResourceNotFoundException {
+        return productQueryService.getProduct(sku)
+                .flatMap(product -> {
+                    productCommandService.deleteProduct(product);
+                    return Mono.just(new ResponseEntity<Void>(HttpStatus.OK));
+                })
+                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @PostMapping(value = "/{sku}/image")
+    @ResponseStatus(value = HttpStatus.OK)
+    public Mono<ResponseEntity<Void>> uploadProductImage(@PathVariable String sku, @RequestPart FilePart filePart) throws ResourceNotFoundException {
+        return productQueryService.getProduct(sku)
+                .flatMap(product -> {
+                    try {
+                        fileStorageService.storeFile(filePart).block();
+                    } catch (FileStorageException e) {
+                        LOG.warn("[PRODUCTCONTROLLER] Uploading product image failed. Error: {}", e.toString());
+                    }
+                    return Mono.just(new ResponseEntity<Void>(HttpStatus.OK));
+                })
+                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 }

@@ -32,7 +32,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     }
 
     @Override
-    public void updateProduct(Product product) throws ResourceNotFoundException {
+    public Mono<Product> updateProduct(Product product) {
         Mono<Product> productMono = productRepository.findBySku(product.getSku())
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new ResourceNotFoundException("[PRODUCTCOMMDANDSERVICE] Product not found for sku :" + product.getSku()))));
 
@@ -49,6 +49,8 @@ public class ProductCommandServiceImpl implements ProductCommandService {
                             .subscribe();
                 }
         );
+
+        return productMono;
     }
 
     @Override
