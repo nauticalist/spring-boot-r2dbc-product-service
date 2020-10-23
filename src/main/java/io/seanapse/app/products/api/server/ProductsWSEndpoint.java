@@ -41,9 +41,7 @@ public class ProductsWSEndpoint {
 
     @Bean
     WebSocketHandler webSocketHandler(ProductEventPublisher eventPublisher, ObjectMapper objectMapper) {
-
         Flux<ProductEvent> publish = Flux.create(eventPublisher).share();
-
         return session -> {
             Flux<WebSocketMessage> messageFlux = publish.map(evt -> {
                 try {
