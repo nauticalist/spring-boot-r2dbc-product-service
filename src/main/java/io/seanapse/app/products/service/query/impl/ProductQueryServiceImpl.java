@@ -27,8 +27,8 @@ public class ProductQueryServiceImpl implements ProductQueryService {
     }
 
     @Override
-    public Mono<Product> getProduct(String sku) throws ResourceNotFoundException {
-        return productRepository.findBySku(sku)
-                .switchIfEmpty(Mono.defer(() -> Mono.error(new ResourceNotFoundException("[PRODUCTCOMMDANDSERVICE] Product not found for sku :" + sku))));
+    public Mono<Product> getProduct(String productId) throws ResourceNotFoundException {
+        return productRepository.findByProductId(productId)
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new ResourceNotFoundException("[PRODUCTCOMMDANDSERVICE] Product not found for productId :" + productId))));
     }
 }

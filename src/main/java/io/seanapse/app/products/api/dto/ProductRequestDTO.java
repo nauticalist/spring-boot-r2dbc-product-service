@@ -10,8 +10,8 @@ import java.util.Objects;
 
 public class ProductRequestDTO {
     @NotNull
-    @NotEmpty(message = "SKU cannot be null or empty")
-    private String sku;
+    @NotEmpty(message = "Product Id cannot be null or empty")
+    private String productId;
 
     @NotEmpty(message = "Name cannot be null or empty")
     @NotNull
@@ -39,8 +39,8 @@ public class ProductRequestDTO {
     public ProductRequestDTO() {
     }
 
-    public ProductRequestDTO(@NotNull @NotEmpty(message = "SKU cannot be null or empty") String sku, @NotEmpty(message = "Name cannot be null or empty") @NotNull String name, @NotEmpty(message = "Description cannot be null or empty") @NotNull String description, @NotNull String category, @NotNull(message = "Price cannot be null or empty") @NotNull Double price, @NotNull(message = "Inventory cannot be null or empty") @NotNull Integer inventory) {
-        this.sku = sku;
+    public ProductRequestDTO(@NotNull @NotEmpty(message = "SKU cannot be null or empty") String productId, @NotEmpty(message = "Name cannot be null or empty") @NotNull String name, @NotEmpty(message = "Description cannot be null or empty") @NotNull String description, @NotNull String category, @NotNull(message = "Price cannot be null or empty") @NotNull Double price, @NotNull(message = "Inventory cannot be null or empty") @NotNull Integer inventory) {
+        this.productId = productId;
         this.name = name;
         this.description = description;
         this.category = category;
@@ -48,12 +48,12 @@ public class ProductRequestDTO {
         this.inventory = inventory;
     }
 
-    public String getSku() {
-        return sku;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setSku(String sku) {
-        this.sku = sku;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public String getName() {
@@ -101,20 +101,20 @@ public class ProductRequestDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductRequestDTO that = (ProductRequestDTO) o;
-        return Objects.equals(sku, that.sku) &&
+        return Objects.equals(productId, that.productId) &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(category, that.category);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sku, name, category);
+        return Objects.hash(productId, name, category);
     }
 
     @Override
     public String toString() {
         return "ProductRequestDTO{" +
-                "sku='" + sku + '\'' +
+                "productId='" + productId + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", category='" + category + '\'' +

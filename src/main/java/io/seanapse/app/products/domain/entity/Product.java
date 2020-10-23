@@ -8,7 +8,7 @@ public class Product {
     @Id
     private Long id;
 
-    private String sku;
+    private String productId;
 
     private String name;
 
@@ -27,9 +27,9 @@ public class Product {
     public Product() {
     }
 
-    public Product(Long id, String sku, String name, String description, String category, Double price, Integer inventory, Instant createdAt, Instant modifiedAt) {
+    public Product(Long id, String productId, String name, String description, String category, Double price, Integer inventory, Instant createdAt, Instant modifiedAt) {
         this.id = id;
-        this.sku = sku;
+        this.productId = productId;
         this.name = name;
         this.description = description;
         this.category = category;
@@ -47,12 +47,12 @@ public class Product {
         this.id = id;
     }
 
-    public String getSku() {
-        return sku;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setSku(String sku) {
-        this.sku = sku;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public String getName() {

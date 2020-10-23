@@ -8,5 +8,5 @@ import reactor.core.publisher.Mono;
 public interface ProductQueryService {
     Flux<Product> getProducts();
 
-    Mono<Product> getProduct(String sku) throws ResourceNotFoundException;
+    Mono<Product> getProduct(String productId) throws ResourceNotFoundException;
 }

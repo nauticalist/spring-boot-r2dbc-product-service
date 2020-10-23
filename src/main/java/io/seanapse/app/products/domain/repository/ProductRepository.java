@@ -7,5 +7,5 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface ProductRepository extends ReactiveSortingRepository<Product, Long> {
-    Mono<Product> findBySku(String sku);
+    Mono<Product> findByProductId(String productId);
 }

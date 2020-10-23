@@ -21,7 +21,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import java.util.function.Function;
 
 @RestController
 @RequestMapping(value = "/api/products")
@@ -60,22 +59,22 @@ public class ProductController {
                 .log();
     }
 
-    @GetMapping(value = "/{sku}")
+    @GetMapping(value = "/{productId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public Mono<ResponseEntity<ProductResponseDTO>> getProduct(@PathVariable String sku) throws ResourceNotFoundException {
-        return productQueryService.getProduct(sku)
+    public Mono<ResponseEntity<ProductResponseDTO>> getProduct(@PathVariable String productId) throws ResourceNotFoundException {
+        return productQueryService.getProduct(productId)
                 .map(productMapper::mapProductToProductResponseDTO)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build())
-                .doOnError(ex -> LOG.warn("[PRODUCTCONTROLLER] get product by sku failed " + sku + ". Error: " + ex.toString()))
+                .doOnError(ex -> LOG.warn("[PRODUCTCONTROLLER] get product by Id failed " + productId + ". Error: " + ex.toString()))
                 .log();
     }
 
-    @PutMapping(value = "/{sku}")
+    @PutMapping(value = "/{productId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public  Mono<ResponseEntity<ProductResponseDTO>> updateProduct(@PathVariable String sku, @Valid @RequestBody ProductRequestDTO productRequestDTO) throws ResourceNotFoundException{
+    public  Mono<ResponseEntity<ProductResponseDTO>> updateProduct(@PathVariable String productId, @Valid @RequestBody ProductRequestDTO productRequestDTO) throws ResourceNotFoundException{
         try {
-            return productQueryService.getProduct(sku)
+            return productQueryService.getProduct(productId)
                     .flatMap(product -> productCommandService.updateProduct(productMapper.mapProductRequestDTOtoProduct(productRequestDTO)))
                     .map(updatedProduct -> ResponseEntity.ok().body(productMapper.mapProductToProductResponseDTO(updatedProduct)))
                     .defaultIfEmpty(ResponseEntity.notFound().build());
@@ -85,10 +84,10 @@ public class ProductController {
         }
     }
 
-    @DeleteMapping(value = "/{sku}")
+    @DeleteMapping(value = "/{productId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public Mono<ResponseEntity<Void>> deleteProduct(@PathVariable String sku) throws ResourceNotFoundException {
-        return productQueryService.getProduct(sku)
+    public Mono<ResponseEntity<Void>> deleteProduct(@PathVariable String productId) throws ResourceNotFoundException {
+        return productQueryService.getProduct(productId)
                 .flatMap(product -> {
                     productCommandService.deleteProduct(product);
                     return Mono.just(new ResponseEntity<Void>(HttpStatus.OK));
@@ -96,10 +95,10 @@ public class ProductController {
                 .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping(value = "/{sku}/image")
+    @PostMapping(value = "/{productId}/image")
     @ResponseStatus(value = HttpStatus.OK)
-    public Mono<ResponseEntity<Void>> uploadProductImage(@PathVariable String sku, @RequestPart FilePart filePart) throws ResourceNotFoundException {
-        return productQueryService.getProduct(sku)
+    public Mono<ResponseEntity<Void>> uploadProductImage(@PathVariable String productId, @RequestPart FilePart filePart) throws ResourceNotFoundException {
+        return productQueryService.getProduct(productId)
                 .flatMap(product -> {
                     try {
                         fileStorageService.storeFile(filePart).block();
