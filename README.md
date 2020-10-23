@@ -8,4 +8,4 @@ Topics covered in my course:
 - Event publishing and serwing events with WebSocket
 
 
-This is my own implementation. If you have any questions or recommendations, feel free to contact me @linkedin
+This is my own implementation. If you have any questions or recommendations, feel free to contact me.
